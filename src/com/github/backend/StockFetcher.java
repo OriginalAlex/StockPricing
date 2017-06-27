@@ -61,7 +61,6 @@ public class StockFetcher {
 		List<String> keys = new ArrayList<String>(prices.keySet());
 		double lastPrice = prices.get(keys.get(keys.size()-1)); // Since we can't know the value TOMORROW initially set it to today's value (0% change)
 		for (int i = keys.size()-1; i > -1; i--) {
-			System.out.println(keys.get(0));
 			String date = keys.get(i);
 			double price = prices.get(date);
 			double percentDiff = ((price * 100) / lastPrice) - 100;
