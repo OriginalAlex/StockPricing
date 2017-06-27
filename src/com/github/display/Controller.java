@@ -102,49 +102,38 @@ public class Controller {
 
 	private StackPane createHover() {
 		StackPane hover = new StackPane();
-		hover.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent arg0) {
-				Label priceIndicator = new Label(hovers.get(hover)[1] + ": $" + String.valueOf(hovers.get(hover)[0]));
-				priceIndicator.getStyleClass().addAll("default-color0", "chart-line-symbol", "chart-series-line");
-				priceIndicator.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
-				priceIndicator.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-				hover.getChildren().add(priceIndicator);
-				hover.setCursor(Cursor.NONE);
-				hover.toFront();
-				hover.setOpacity(1.0);
-			}
+		hover.setOnMouseEntered(e -> {
+			Label priceIndicator = new Label(hovers.get(hover)[1] + ": $" + String.valueOf(hovers.get(hover)[0]));
+			priceIndicator.getStyleClass().addAll("default-color0", "chart-line-symbol", "chart-series-line");
+			priceIndicator.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+			priceIndicator.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+			hover.getChildren().add(priceIndicator);
+			hover.setCursor(Cursor.NONE);
+			hover.toFront();
+			hover.setOpacity(1.0);
 		});
-		hover.setOnMouseExited(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				hover.getChildren().clear();
-				hover.setCursor(Cursor.CROSSHAIR);
-				hover.setOpacity(0.0);
-			}
+		hover.setOnMouseExited(e -> {
+			hover.getChildren().clear();
+			hover.setCursor(Cursor.CROSSHAIR);
+			hover.setOpacity(0.0);
+			
 		});
 		ContextMenu cm = new ContextMenu();
 		MenuItem google = new MenuItem("Google Search");
-		google.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				try {
-					Desktop.getDesktop()
-							.browse(new URL(("https://www.google.co.uk/search?q="
-									+ ((String) hovers.get(hover)[1]).replaceAll(",", "") + " " + companyName)
-											.replaceAll(" ", "+")).toURI());
-				} catch (IOException | URISyntaxException e1) {
-					e1.printStackTrace();
-				}
+		google.setOnAction(e -> {
+			try {
+				Desktop.getDesktop()
+						.browse(new URL(("https://www.google.co.uk/search?q="
+								+ ((String) hovers.get(hover)[1]).replaceAll(",", "") + " " + companyName)
+										.replaceAll(" ", "+")).toURI());
+			} catch (IOException | URISyntaxException e1) {
+				e1.printStackTrace();
 			}
 		});
 		cm.getItems().add(google);
-		hover.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				if (e.isSecondaryButtonDown()) {
-					cm.show(hover, e.getScreenX(), e.getScreenY());
-				}
+		hover.setOnMousePressed(e -> {
+			if (e.isSecondaryButtonDown()) {
+				cm.show(hover, e.getScreenX(), e.getScreenY());
 			}
 		});
 		return hover;
