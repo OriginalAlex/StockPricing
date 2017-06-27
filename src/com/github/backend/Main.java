@@ -11,19 +11,19 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	
+
 	private BorderPane bp;
 	private static Main instance;
 	private Parent root;
-	
+
 	public static Main getInstance() {
 		return instance;
 	}
-	
+
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
+
 	public void setCentre(Node n) {
 		this.bp.setCenter(n);
 	}

@@ -2,6 +2,11 @@ package com.github.backend;
 
 public class PriceMovement {
 	
+	/*
+	 * PriceMovement object exists to ensure that the rows on the "Significant Changes" object
+	 * on the JavaFX are able to accurately represents a change in price. 
+	 */
+	
 	private String from;
 	private String to;
 	private double percentChange;

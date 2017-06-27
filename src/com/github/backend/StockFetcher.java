@@ -29,9 +29,15 @@ public class StockFetcher {
 	}
 
 	public void addPrices(String startDaysAgo, String rowCount) {
+		/*
+		 * All URLs for Google finance follow the similar format:
+		 * "https://www.google.com/finance/historical?q=" + ticker + "&start=" + startDaysAgo + "&num=" + rowCount
+		 * The only limitation is that the max rowCount for any page is 200.
+		 * This method scrapes that URL for the closing price of each stock on a specific day, and places it in a hashmap which can then be collected.					
+		 */
 		Document doc;
 		try {
-			doc = Jsoup.connect("https://www.google.com/finance/historical?q=" + ticker + "&start=" + startDaysAgo
+			doc = Jsoup.connect("https://www.google.com/finance/historical?q=" + ticker + "&start=" + startDaysAgo 
 					+ "&num=" + rowCount).get();
 			Elements dates = doc.select("tr");
 			Elements stockClosing = doc.select("td.rgt");
@@ -58,6 +64,10 @@ public class StockFetcher {
 	}
 	
 	public void getSigChanges(double percentChange) {
+		/*
+		 * Checks the whole dataset and checks if the percent difference between the closing proces on two days is
+		 * greater than percentchange or less than -percentChange, if it is - it is considered "Significant" and added to the row of specific changes on the JavaFX thread.
+		 */
 		List<String> keys = new ArrayList<String>(prices.keySet());
 		double lastPrice = prices.get(keys.get(keys.size()-1)); // Since we can't know the value TOMORROW initially set it to today's value (0% change)
 		for (int i = keys.size()-1; i > -1; i--) {

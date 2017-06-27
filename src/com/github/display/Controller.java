@@ -71,28 +71,28 @@ public class Controller {
 	}
 
 	private void initializeTable() {
-		this.fromColumn.setCellValueFactory(new PropertyValueFactory<>("from"));
+		/*
+		 * Make it so that the columns on the table show the value they are meant to (See PriceMovement to understand what from/to/percentChange refer to)
+		 */
+		this.fromColumn.setCellValueFactory(new PropertyValueFactory<>("from")); 
 		this.toColumn.setCellValueFactory(new PropertyValueFactory<>("to"));
 		this.percentChangeColumn.setCellValueFactory(new PropertyValueFactory<>("percentChange"));
 	}
 
-	public void addRow(String from, String to, double percentChange) {
+	public void addRow(String from, String to, double percentChange) { // Adds a row of values to the table showing percent changes
 		Platform.runLater(() -> {
 			PriceMovement pm = new PriceMovement(from, to, percentChange);
 			table.getItems().add(pm);
 			ContextMenu cm = new ContextMenu();
 			MenuItem search = new MenuItem("Google Search");
-			search.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					try {
-						ObservableList<PriceMovement> i = table.getSelectionModel().getSelectedItems();
-						Desktop.getDesktop().browse(
-								new URL(("https://www.google.co.uk/search?q=" + i.get(0).getTo().replaceAll(",", "")
-										+ " " + companyName).replaceAll(" ", "+")).toURI());
-					} catch (IOException | URISyntaxException e1) {
-						e1.printStackTrace();
-					}
+			search.setOnAction(e -> { // Create the google search for the price movement
+				try {
+					ObservableList<PriceMovement> i = table.getSelectionModel().getSelectedItems();
+					Desktop.getDesktop().browse(
+							new URL(("https://www.google.co.uk/search?q=" + i.get(0).getTo().replaceAll(",", "")
+									+ " " + companyName).replaceAll(" ", "+")).toURI());
+				} catch (IOException | URISyntaxException e1) {
+					e1.printStackTrace();
 				}
 			});
 			cm.getItems().add(search);
@@ -105,7 +105,7 @@ public class Controller {
 		hover.setOnMouseEntered(e -> {
 			Label priceIndicator = new Label(hovers.get(hover)[1] + ": $" + String.valueOf(hovers.get(hover)[0]));
 			priceIndicator.getStyleClass().addAll("default-color0", "chart-line-symbol", "chart-series-line");
-			priceIndicator.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+			priceIndicator.setStyle("-fx-font-size: 12; -fx-font-weight: bold;"); // Literally make the tag that appears when you hover over a point on the graph. (also styles it)
 			priceIndicator.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
 			hover.getChildren().add(priceIndicator);
 			hover.setCursor(Cursor.NONE);
@@ -123,7 +123,7 @@ public class Controller {
 		google.setOnAction(e -> {
 			try {
 				Desktop.getDesktop()
-						.browse(new URL(("https://www.google.co.uk/search?q="
+						.browse(new URL(("https://www.google.co.uk/search?q=" // Opens up a google search for the specific company on that day (ie. hover[1])
 								+ ((String) hovers.get(hover)[1]).replaceAll(",", "") + " " + companyName)
 										.replaceAll(" ", "+")).toURI());
 			} catch (IOException | URISyntaxException e1) {
@@ -139,7 +139,7 @@ public class Controller {
 		return hover;
 	}
 
-	private int numberOfDaysDifference(String date1, String date2) {
+	private int numberOfDaysDifference(String date1, String date2) { // See below
 		int date1Val = getDayValue(date1);
 		int date2Val = getDayValue(date2);
 		String year1 = date1.split(" ")[2];
@@ -148,6 +148,11 @@ public class Controller {
 	}
 
 	private int getDayValue(String date) { // all follow the format: MON(th) DAY
+		/* This method was added because stock prices do not
+		 * have values for every daym and so to ensure that my
+		 * time axis did not give a distorted view on the change
+		 * in stock, I created this method to represent the difference between two points accurately.
+		 */
 		String[] parts = date.split(" ");
 		String month = parts[0];
 		int val = Integer.parseInt(parts[1].replaceAll(",", ""));
@@ -189,17 +194,18 @@ public class Controller {
 			val += 365;
 			break;
 		}
-		return val;
+		return val; 
 	}
 	
 	private void getStockPrices(StockFetcher sf) { // number of entries variable stores the number of quotes to collect.
 		int current = 0;
-		while (numberOfEntries - 200 > 0) {
+		int temp = numberOfEntries;
+		while (temp - 200 > 0) {
 			sf.addPrices(String.valueOf(current), "200");
 			current += 200;
-			numberOfEntries -= 200;
+			temp -= 200;
 		}
-		sf.addPrices(String.valueOf(current), String.valueOf(numberOfEntries));
+		sf.addPrices(String.valueOf(current), String.valueOf(temp));
 	}
 
 	private void updateChart(LineChart<Number, Number> chart) {
@@ -213,7 +219,7 @@ public class Controller {
 		Map<String, Double> prices = sf.fetchPrices();
 		List<String> keys = new ArrayList<String>(prices.keySet());
 		int day = 0;
-		for (int i = keys.size() - 1; i > -1; i--) {
+		for (int i = keys.size() - 1; i > -1; i--) { // Reverse, because the points must be plotted in reverse-chronological order to be displayed properly.
 			tempVal = prices.get(keys.get(i));
 			if (i != 0) {
 				XYChart.Data<Number, Number> value = new XYChart.Data<Number, Number>(
@@ -257,7 +263,7 @@ public class Controller {
 	}
 
 	@FXML
-	private void updateCompany() {
+	private void updateCompany() { // Update the company with what is in the textarea.
 		this.companyName = name.getText();
 		this.ticker = tickerArea.getText();
 		this.display.setText("Displaying: " + this.companyName);
